@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Fabric.js Polygon with Dots Connecting Lines</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/fabric.js/4.5.0/fabric.min.js"></script>
+</head>
+
+<body>
+    <canvas id="canvas" width="800" height="600"></canvas>
+
+    <script>
+        // Initialize Fabric.js canvas
+        var canvas = new fabric.Canvas('canvas');
+
+        // Array to store the points of the polygon
+        var points = [];
+
+        // Function to create a circle (dot) at the specified position
+        function createDot(x, y) {
+            var dot = new fabric.Circle({
+                left: x - 5, // Offset to center the circle on the point
+                top: y - 5,
+                radius: 5,
+                fill: 'red',
+                selectable: false,
+                evented: false,
+            });
+
+            canvas.add(dot);
+        }
+
+        // Function to update the polygon whenever a new point is added
+        function updatePolygon() {
+            // Clear the canvas before redrawing the polygon
+            canvas.clear();
+
+            // Draw the dots and connecting lines
+            for (var i = 0; i < points.length; i++) {
+                createDot(points[i].x, points[i].y);
+
+                if (i > 0) {
+                    var line = new fabric.Line(
+                        [points[i - 1].x, points[i - 1].y, points[i].x, points[i].y],
+                        {
+                            stroke: 'black',
+                            strokeWidth: 2,
+                            selectable: false,
+                            evented: false,
+                        }
+                    );
+                    canvas.add(line);
+                }
+            }
+
+            // Connect the last and first points to form a closed polygon
+            if (points.length >= 2) {
+                var line = new fabric.Line(
+                    [points[points.length - 1].x, points[points.length - 1].y, points[0].x, points[0].y],
+                    {
+                        stroke: 'black',
+                        strokeWidth: 2,
+                        selectable: false,
+                        evented: false,
+                    }
+                );
+                canvas.add(line);
+            }
+        }
+
+        // Event listener for mouse click to add new points
+        canvas.on('mouse:down', function (event) {
+            var pointer = canvas.getPointer(event.e);
+            var newPoint = { x: pointer.x, y: pointer.y };
+            points.push(newPoint);
+            updatePolygon();
+        });
+    </script>
+</body>
+
+</html>
